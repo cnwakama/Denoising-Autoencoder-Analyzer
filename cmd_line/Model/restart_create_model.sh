@@ -50,9 +50,6 @@ bias_h_path='Models/biasH.csv'
 test_reconstruction='Models/test_reconstruction.csv'
 data=${HOME}'/.yadlt/data/dae/'
 
-
-python ../../yadlt/core/config.py
-
 if [[ ! -d 'Models/' ]]; then
         mkdir -p 'Models/'
         touch ${feature_path}
@@ -81,7 +78,8 @@ act_fun_enc=(sigmoid tanh relu)
 act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
-python csv_to_numpy.py --dataset rna_solidtumor_tcgahnsc.csv --name "$name" --directory ${dataset}
+#rna_solidtumor_tcgahnsc.csv
+python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
 
 printf '%s\n' ${header} >> ${feature_path}
 
@@ -98,7 +96,7 @@ printf '%s' 'Model' >> ${test_reconstruction}
 for i in `seq 1 20531`; do printf ",Feature %d" ${i}; done >> ${test_reconstruction}
 
 first='next_line'
-model_count=102
+model_count=${2}
 echo 'Start Training Models'
 for b in "${batch_size[@]}" ; do
     for l in "${learning_rate[@]}" ; do
@@ -106,9 +104,10 @@ for b in "${batch_size[@]}" ; do
             for e in "${epochs[@]}"; do
                 for enc in "${act_fun_enc[@]}" ; do
                     for dec in "${act_fun_dec[@]}" ; do
-			if [[ "$model_count" != "$model" ]] then
-				continue
-			fi
+                        if [[ "$model_count" != "$model" ]] ; then
+                            continue
+                        fi
+
                         echo 'Model '"${model}"
                         mkdir -p "$data$name"
 

@@ -51,7 +51,7 @@ test_reconstruction='Models/test_reconstruction.csv'
 data=${HOME}'/.yadlt/data/dae/'
 
 
-python ../../yadlt/core/config.py
+#python ../../yadlt/core/config.py
 
 if [[ ! -d 'Models/' ]]; then
         mkdir -p 'Models/'
@@ -80,8 +80,9 @@ epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
 act_fun_dec=(none sigmoid tanh relu)
 
+#rna_solidtumor_tcgahnsc.csv
 echo 'Creating *.npy dataset file'
-python csv_to_numpy.py --dataset rna_solidtumor_tcgahnsc.csv --name "$name" --directory ${dataset}
+python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
 
 printf '%s\n' ${header} >> ${feature_path}
 
@@ -142,7 +143,7 @@ for b in "${batch_size[@]}" ; do
                         python numpy_to_csv.py --input "$data$name"'/'${name}'-reconstruction.npy' \
                         --output ${test_reconstruction} --name ${name} --mult_lines --next_line ${first}
 
-                        first='hi'
+                        first='first'
                         ((model++))
                         name='dae_model'${model}
                     done
