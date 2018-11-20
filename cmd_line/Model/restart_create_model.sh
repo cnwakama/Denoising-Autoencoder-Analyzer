@@ -22,7 +22,7 @@
 #$ -q COE-GPU,UI-GPU,all.q
 
 #Select the number of slots the job will use
-#$ -pe smp 2
+#$ -pe smp 28
 
 #Indicate that the job requires a GPU
 #$ -l gpu=true
@@ -31,7 +31,7 @@
 #$ -l ngpus=1
 
 #Indicate that the job requires a mid-memory (currently 256GB node)
-##$ -l mem_256G=true
+#$ -l mem_256G=true
 
 #Indicate the CPU architecture the job requires
 ##$ -l cpu_arch=broadwell
@@ -104,7 +104,8 @@ for b in "${batch_size[@]}" ; do
             for e in "${epochs[@]}"; do
                 for enc in "${act_fun_enc[@]}" ; do
                     for dec in "${act_fun_dec[@]}" ; do
-                        if [[ "$model_count" != "$model" ]] ; then
+                        if [[ $model_count != $model ]] ; then
+                            ((model++))
                             continue
                         fi
 
@@ -145,6 +146,7 @@ for b in "${batch_size[@]}" ; do
                         --output ${test_reconstruction} --name ${name} --mult_lines --next_line ${first}
 
                         first='hi'
+                        ((model_count++))
                         ((model++))
                         name='dae_model'${model}
                     done
