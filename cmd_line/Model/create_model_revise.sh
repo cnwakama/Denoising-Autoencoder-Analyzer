@@ -50,9 +50,6 @@ bias_h_path='Models/biasH_revise.csv'
 test_reconstruction='Models/test_reconstruction_revise.csv'
 data=${HOME}'/.yadlt/data/dae/'
 
-
-#python ../../yadlt/core/config.py
-
 if [[ -d 'Models/' ]]; then
         #mkdir -p 'Models/'
         touch ${feature_path}
@@ -68,34 +65,17 @@ if [[ ! -d ${data} ]]; then
     mkdir -p ${dataset}
 fi
 
-model=109
+model=${1}
 name='dae_model'${model}
 header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function,Decoder_Activation_Function"
 
-# Hyper parameters declare -a
+# Hyper parameters declared = 1295 combination
 batch_size=(1 10 20 50)
 learning_rate=(0.01)
 corruption_rate=(0.0 0.1 0.2)
 epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
 act_fun_dec=(none sigmoid tanh relu)
-
-#echo 'Creating *.npy dataset file'
-#python csv_to_numpy.py --dataset rna_solidtumor_tcgahnsc.csv --name "$name" --directory ${dataset}
-
-#printf '%s\n' ${header} >> ${feature_path}
-
-printf '%s' 'Model' >> ${weight_path}
-for i in `seq 1 100`; do printf ",Node %d" ${i}; done >> ${weight_path}
-
-printf '%s' 'Model' >> ${bias_v_path}
-for i in `seq 1 100`; do printf ",Node %d" ${i}; done >> ${bias_v_path}
-
-printf '%s' 'Model' >> ${bias_h_path}
-for i in `seq 1 20531`; do printf ",Feature %d" ${i}; done >> ${bias_h_path}
-
-printf '%s' 'Model' >> ${test_reconstruction}
-for i in `seq 1 20531`; do printf ",Feature %d" ${i}; done >> ${test_reconstruction}
 
 first='next_line'
 

@@ -69,7 +69,7 @@ model=1
 name='dae_model'${model}
 header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function,Decoder_Activation_Function"
 
-# Hyper parameters declare -a
+# Hyper parameters declare = 1295 combination
 batch_size=(1 10 20 50)
 learning_rate=(0.005 0.01 0.05)
 corruption_rate=(0.0 0.1 0.2)
@@ -78,8 +78,7 @@ act_fun_enc=(sigmoid tanh relu)
 act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
-#rna_solidtumor_tcgahnsc.csv
-python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
+python csv_to_numpy.py --dataset "rna_solidtumor_tcgahnsc.csv" --name "$name" --directory ${dataset}
 
 printf '%s\n' ${header} >> ${feature_path}
 
@@ -110,6 +109,7 @@ for b in "${batch_size[@]}" ; do
                         fi
 
                         echo 'Model '"${model}"
+                        exit 0
                         mkdir -p "$data$name"
 
                         python ../autoencoders/run_autoencoder.py --n_components 100 --dataset custom \

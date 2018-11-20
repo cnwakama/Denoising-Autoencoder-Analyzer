@@ -50,9 +50,6 @@ bias_h_path='Models/biasH.csv'
 test_reconstruction='Models/test_reconstruction.csv'
 data=${HOME}'/.yadlt/data/dae/'
 
-
-#python ../../yadlt/core/config.py
-
 if [[ ! -d 'Models/' ]]; then
         mkdir -p 'Models/'
         touch ${feature_path}
@@ -72,7 +69,7 @@ model=1
 name='dae_model'${model}
 header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function,Decoder_Activation_Function"
 
-# Hyper parameters declare -a
+# Hyper parameters declare = 1295 combination
 batch_size=(1 10 20 50)
 learning_rate=(0.005 0.01 0.05)
 corruption_rate=(0.0 0.1 0.2)
@@ -80,7 +77,6 @@ epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
 act_fun_dec=(none sigmoid tanh relu)
 
-#rna_solidtumor_tcgahnsc.csv
 echo 'Creating *.npy dataset file'
 python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
 
