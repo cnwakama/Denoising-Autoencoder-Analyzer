@@ -67,15 +67,15 @@ fi
 
 model=1
 name='dae_model'${model}
-header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function,Decoder_Activation_Function"
-
-# Hyper parameters declare = 1295 combination
+header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function"
+#,Decoder_Activation_Function
+# Hyper parameters declare = 1295 combinations -> 324 combinations
 batch_size=(1 10 20 50)
 learning_rate=(0.005 0.01 0.05)
 corruption_rate=(0.0 0.1 0.2)
 epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
-act_fun_dec=(none sigmoid tanh relu)
+#act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
 python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
@@ -102,7 +102,7 @@ for b in "${batch_size[@]}" ; do
         for c in "${corruption_rate[@]}" ; do
             for e in "${epochs[@]}"; do
                 for enc in "${act_fun_enc[@]}" ; do
-                    for dec in "${act_fun_dec[@]}" ; do
+                    #for dec in "${act_fun_dec[@]}" ; do
                         echo 'Model '"${model}"
                         mkdir -p "$data$name"
 
@@ -111,7 +111,7 @@ for b in "${batch_size[@]}" ; do
                                 --valid_dataset ${dataset}'validation_set.npy' \
                                 --test_dataset ${dataset}'test_set.npy' --batch_size ${b} \
                                 --num_epochs ${e} --learning_rate "${l}" --corr_type masking \
-                                --corr_frac ${c} --enc_act_func ${enc} --dec_act_func ${dec} \
+                                --corr_frac ${c} --enc_act_func ${enc} --dec_act_func "sigmoid" \
                                 --loss_func cross_entropy --save_reconstructions "$data$name"'/'${name}'-reconstruction.npy' \
                                 --save_parameters "$data$name"'/'${name} --name "$name" --seed 1
 
@@ -142,7 +142,7 @@ for b in "${batch_size[@]}" ; do
                         first='first'
                         ((model++))
                         name='dae_model'${model}
-                    done
+                    #done
                 done
             done
         done

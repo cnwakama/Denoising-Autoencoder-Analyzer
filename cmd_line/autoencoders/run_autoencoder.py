@@ -116,6 +116,9 @@ if __name__ == '__main__':
     if FLAGS.v_bias:
         bv = np.load(FLAGS.v_bias)
 
+    trX = tf.keras.utils.normalize(trX)
+    vlX = tf.keras.utils.normalize(vlX)
+    teX = tf.keras.utils.normalize(teX)
     dae.fit(trX, trX, vlX, vlX)
 
     # Save the model paramenters
