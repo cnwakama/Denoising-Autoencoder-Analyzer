@@ -2,6 +2,10 @@ import tensorflow as tf
 from vis.visualization import visualize_activation
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import KFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
 from matplotlib import pyplot as plt
 from vis.utils import utils
 
@@ -40,6 +44,12 @@ class Evalidate():
         bias.shape = shape
         return bias
 
+    def _coeff_determination(self, y_true, y_pred):
+        K = tf.keras.backend
+        SS_res = K.sum(K.square(y_true - y_pred))
+        SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
+        return 1 - SS_res/(SS_tot + K.epsilon())
+
     def build_model(self, model_path, n=20531, activation="linear"):
         # Get TensorFlow model path
         self.model_path = model_path
@@ -50,13 +60,14 @@ class Evalidate():
         # Layers
         encoded_input = tf.keras.layers.Dense(100, kernel_initializer=self._weight_init, bias_initializer=self._bias_init,
                                               kernel_regularizer=tf.keras.regularizers.l2(self.l1))(input)
+        encoded_input = tf.keras.layers.BatchNormalization()(encoded_input)
         predictions = tf.keras.layers.Dense(1, activation=activation)(encoded_input)
 
         self.model = tf.keras.models.Model(input, predictions)
         self.model.layers[1].trainable = False
 
-        self.model.compile(loss="binary_crossentropy", optimizer="sgd",
-                      metrics=["accuracy", "mae", "mse"])
+        self.model.compile(loss="mean_squared_error", optimizer="sgd",
+                      metrics=["accuracy", "mae", "mse", self._coeff_determination])
         self.model.summary()
 
 
@@ -65,7 +76,14 @@ class Evalidate():
 
         # normalized
         trX = tf.keras.utils.normalize(train_X)
+        regression = tf.keras.wrappers.scikit_learn.KerasRegressor(build_fn=self.model, epochs=100, batch_size=5, verbose=1)
         history = self.model.fit(train_X, train_Y, verbose=1, validation_split=val)
+
+        kFold = KFold(n_splits=10, random_state=1)
+        results = cross_val_score(regression, train_X, train_Y, cv=kFold)
+        results.mean()
+        results.std()
+
 
         # Metric Analysis
         predictions = self.model.predict(train_X)
@@ -88,12 +106,14 @@ class Evalidate():
             print('Test accuracy:', score[2])
             print('Test accuracy:', score[3])
 
+        return trX
+
     def min_death(self, data_path, model_path):
         train_X, train_Y = self._create_variables(data_path)
         self.build_model(train_X.shape[0], model_path)
-        self.train_model(train_X, train_Y)
+        normalX = self.train_model(train_X, train_Y)
         feature_extract = visualize_activation(self.model, layer_idx=1, filter_indices=None, grad_modifier="negate",
-                                               input_range=(0, 1), seed_input=1, max_iter=self.iter, verbose=False)
+                                               input_range=(np.min(normalX), np.max(normalX)), seed_input=1, max_iter=self.iter, verbose=False)
 
         print("Shape of Extract:", feature_extract.shape)
         print(feature_extract)
@@ -128,5 +148,5 @@ class Evalidate():
 
 e = Evalidate()
 e.build_model("/Users/chibuzonwakama/yadlt/models/dae_model47")
-e.train_model("dataset.npy")
+#e.train_model("dataset.npy")
 # e.create_labels("clinical.tsv", "rna_solidtumor_tcgahnsc.csv")

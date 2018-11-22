@@ -28,6 +28,7 @@ flags.DEFINE_string('v_bias', None, 'Path to a numpy array containing the decode
 flags.DEFINE_integer('seed', -1, 'Seed for the random generators (>= 0). Useful for testing hyperparameters.')
 
 # Stacked Denoising Autoencoder specific parameters
+flags.DEFINE_string("regtype", "l2", "Type of regularization to apply.")
 flags.DEFINE_integer('n_components', 256, 'Number of hidden units in the dae.')
 flags.DEFINE_float('regcoef', 5e-4, 'Regularization parameter. If 0, no regularization.')
 flags.DEFINE_string('corr_type', 'none', 'Type of input corruption. ["none", "masking", "salt_and_pepper"]')
@@ -101,7 +102,8 @@ if __name__ == '__main__':
         loss_func=FLAGS.loss_func, opt=FLAGS.opt, regcoef=FLAGS.regcoef,
         learning_rate=FLAGS.learning_rate, momentum=FLAGS.momentum,
         num_epochs=FLAGS.num_epochs,
-        batch_size=FLAGS.batch_size)
+        batch_size=FLAGS.batch_size,
+        regtype=FLAGS.regtype)
 
     # Fit the model
     W = None
@@ -116,9 +118,9 @@ if __name__ == '__main__':
     if FLAGS.v_bias:
         bv = np.load(FLAGS.v_bias)
 
-    trX = tf.keras.utils.normalize(trX)
-    vlX = tf.keras.utils.normalize(vlX)
-    teX = tf.keras.utils.normalize(teX)
+    trX = tf.keras.utils.normalize(trX, axis=1)
+    vlX = tf.keras.utils.normalize(vlX, axis=1)
+    teX = tf.keras.utils.normalize(teX, axis=1)
     dae.fit(trX, trX, vlX, vlX)
 
     # Save the model paramenters
