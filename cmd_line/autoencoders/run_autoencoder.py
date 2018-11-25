@@ -121,6 +121,8 @@ if __name__ == '__main__':
     trX = tf.keras.utils.normalize(trX, axis=1)
     vlX = tf.keras.utils.normalize(vlX, axis=1)
     teX = tf.keras.utils.normalize(teX, axis=1)
+    #print(trX)
+    #print(vlX)
     dae.fit(trX, trX, vlX, vlX)
 
     # Save the model paramenters

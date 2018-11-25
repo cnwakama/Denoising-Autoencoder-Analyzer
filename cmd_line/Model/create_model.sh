@@ -2,7 +2,7 @@
 
 #####Set Scheduler Configuration Directives#####
 #Set the name of the job. This will be the first part of the error/output filename.
-#$ -N dae
+#$ -N dae_normalized
 
 #Set the current working directory as the location for the error and output files.
 #(Will show up as .e and .o files)
@@ -19,10 +19,10 @@
 #####Resource Selection Directives#####
 #See the HPC wiki for complete resource information: https://wiki.uiowa.edu/display/hpcdocs/Argon+Cluster
 #Select the queue to run in
-#$ -q COE-GPU,UI-GPU,all.q
+#$ -q COE-GPU,UI-GPU
 
 #Select the number of slots the job will use
-#$ -pe smp 2
+#$ -pe smp 56
 
 #Indicate that the job requires a GPU
 #$ -l gpu=true
@@ -31,7 +31,7 @@
 #$ -l ngpus=1
 
 #Indicate that the job requires a mid-memory (currently 256GB node)
-##$ -l mem_256G=true
+#$ -l mem_256G=true
 
 #Indicate the CPU architecture the job requires
 ##$ -l cpu_arch=broadwell
@@ -43,12 +43,14 @@
 ##$ -l fabric=omnipath
 #####End Resource Selection Directives#####
 module load python/2.7.15
+
+#python config.py
 feature_path='Models/features.csv'
 weight_path='Models/weights.csv'
 bias_v_path='Models/biasV.csv'
 bias_h_path='Models/biasH.csv'
 test_reconstruction='Models/test_reconstruction.csv'
-data=${HOME}'/.yadlt/data/dae/'
+data=${HOME}'/.yadlt/data/dae_normalization/'
 
 if [[ ! -d 'Models/' ]]; then
         mkdir -p 'Models/'
@@ -66,7 +68,7 @@ if [[ ! -d ${data} ]]; then
 fi
 
 model=1
-name='dae_model'${model}
+name='dae_model_normalized'${model}
 header="Model,Batch_Size,Learning_Rate,Corruption_Rate,Epochs,Encoder_Activation_Function"
 #,Decoder_Activation_Function
 # Hyper parameters declare = 1295 combinations -> 324 combinations
@@ -78,7 +80,7 @@ act_fun_enc=(sigmoid tanh relu)
 #act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
-python csv_to_numpy.py --dataset ${1} --name "$name" --directory ${dataset}
+python csv_to_numpy.py --dataset rna_solidtumor_tcgahnsc.csv  --directory ${dataset}
 
 printf '%s\n' ${header} >> ${feature_path}
 
@@ -111,7 +113,7 @@ for b in "${batch_size[@]}" ; do
                                 --valid_dataset ${dataset}'validation_set.npy' \
                                 --test_dataset ${dataset}'test_set.npy' --batch_size ${b} \
                                 --num_epochs ${e} --learning_rate "${l}" --corr_type masking \
-                                --corr_frac ${c} --enc_act_func ${enc} --dec_act_func "sigmoid" \
+                                --corr_frac ${c} --enc_act_func ${enc} --dec_act_func sigmoid \
                                 --loss_func cross_entropy --save_reconstructions "$data$name"'/'${name}'-reconstruction.npy' \
                                 --save_parameters "$data$name"'/'${name} --name "$name" --seed 1
 

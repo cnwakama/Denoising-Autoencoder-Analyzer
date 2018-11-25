@@ -7,10 +7,10 @@ flags = tf.app.flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('dataset', '', 'Path to dataset.')
-flags.DEFINE_string('name', '', 'Name of dataset')
+# flags.DEFINE_string('name', '', 'Name of dataset')
 flags.DEFINE_string('directory', '', 'Directory to store information')
 
-data = np.genfromtxt(FLAGS.dataset, skip_header=True, delimiter=',')
+data = np.genfromtxt(FLAGS.dataset, skip_header=1, delimiter=',')
 data = data[:,1:]
 
 X_train, X_test = train_test_split(data, test_size=0.1)
