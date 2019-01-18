@@ -26,6 +26,7 @@ flags.DEFINE_string('weights', None, 'Path to a numpy array containing the weigh
 flags.DEFINE_string('h_bias', None, 'Path to a numpy array containing the encoder bias vector.')
 flags.DEFINE_string('v_bias', None, 'Path to a numpy array containing the decoder bias vector.')
 flags.DEFINE_integer('seed', -1, 'Seed for the random generators (>= 0). Useful for testing hyperparameters.')
+flags.DEFINE_bool('normalize', False, 'Normalized dataset')
 
 # Stacked Denoising Autoencoder specific parameters
 flags.DEFINE_string("regtype", "l2", "Type of regularization to apply.")
@@ -118,11 +119,12 @@ if __name__ == '__main__':
     if FLAGS.v_bias:
         bv = np.load(FLAGS.v_bias)
 
-    trX = tf.keras.utils.normalize(trX, axis=1)
-    vlX = tf.keras.utils.normalize(vlX, axis=1)
-    teX = tf.keras.utils.normalize(teX, axis=1)
-    #print(trX)
-    #print(vlX)
+    # Normalized Dataset
+    if FLAGS.normalize:
+        trX = tf.keras.utils.normalize(trX, axis=1)
+        vlX = tf.keras.utils.normalize(vlX, axis=1)
+        teX = tf.keras.utils.normalize(teX, axis=1)
+
     dae.fit(trX, trX, vlX, vlX)
 
     # Save the model paramenters

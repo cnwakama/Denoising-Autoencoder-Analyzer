@@ -115,7 +115,7 @@ for b in "${batch_size[@]}" ; do
                                 --num_epochs ${e} --learning_rate "${l}" --corr_type masking \
                                 --corr_frac ${c} --enc_act_func ${enc} --dec_act_func sigmoid \
                                 --loss_func cross_entropy --save_reconstructions "$data$name"'/'${name}'-reconstruction.npy' \
-                                --save_parameters "$data$name"'/'${name} --name "$name" --seed 1
+                                --save_parameters "$data$name"'/'${name} --name "$name" --seed 1 --normalize
 
                         printf '%s\n' ${name} ${b} ${l} ${c} ${e} ${enc} ${dec} | paste -d ',' -s - >> ${feature_path}
 
