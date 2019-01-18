@@ -9,7 +9,7 @@ from sklearn.feature_selection import f_classif, f_regression, f_oneway
 from keras.models import Sequential, Model
 from keras.layers import Dense, Lambda, Input, BatchNormalization
 from keras.wrappers.scikit_learn import KerasRegressor
-from vis.visualization import visualize_activation
+# from vis.visualization import visualize_activation
 
 # global variable
 model_path = "/Volumes/Files Backups/Document_12-12-18/New Folder With Items/yadlt/models/dae_model47"
@@ -167,12 +167,12 @@ class Evalidate():
         train_X, train_Y = self._create_variables(data_path)
         self.build_model(train_X.shape[0], model_path)
         normalX = self.train_model(train_X, train_Y)
-        feature_extract = visualize_activation(self.model, layer_idx=1, filter_indices=None, grad_modifier="negate",
-                                               input_range=(np.min(normalX), np.max(normalX)), seed_input=1,
-                                               max_iter=self.iter, verbose=False)
-
-        print("Shape of Extract:", feature_extract.shape)
-        print(feature_extract)
+        # feature_extract = visualize_activation(self.model, layer_idx=1, filter_indices=None, grad_modifier="negate",
+        #                                        input_range=(np.min(normalX), np.max(normalX)), seed_input=1,
+        #                                        max_iter=self.iter, verbose=False)
+        #
+        # print("Shape of Extract:", feature_extract.shape)
+        # print(feature_extract)
 
 
 
