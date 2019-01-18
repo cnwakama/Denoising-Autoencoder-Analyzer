@@ -187,7 +187,7 @@ class Evalidate():
         return training, labels
 
 
-eval = Evalidate()
-model = eval.build_model()
-print (model.summary())
-eval.train_model(model_path=model_path)
+#eval = Evalidate()
+#model = eval.build_model()
+#print (model.summary())
+#eval.train_model(model_path=model_path)
