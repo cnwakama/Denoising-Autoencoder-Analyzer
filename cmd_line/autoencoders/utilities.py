@@ -37,7 +37,7 @@ def compressed_inputs(directory_path, dataset_path, output_directory):
 
     for file in os.listdir(directory_path):
         if file.endswith(".meta"):
-            encoded_data = evalidate.encoder_tensor(normalized_data, file)
+            encoded_data = evalidate.encoder_tensor(normalized_data, os.path.join(directory_path, file))
             np.savetxt(os.path.join(output_directory, os.path.splitext(file)[0]+".csv"), encoded_data, delimiter=",")
             print ("Model: " + os.path.splitext(file)[0])
 
