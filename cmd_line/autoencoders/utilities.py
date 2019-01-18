@@ -28,7 +28,8 @@ def create_labels(label_path, training_path, name):
     print("Complete")
 
 def compressed_inputs(directory_path, dataset_path, output_directory):
-    data = np.load(dataset_path)
+    data = np.genfromtxt(dataset_path, skip_header=1, delimiter=',')
+    data = data[:, 1:]
 
     normalized_data = tf.keras.utils.normalize(data)
 
