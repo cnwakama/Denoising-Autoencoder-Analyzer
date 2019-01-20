@@ -2,7 +2,7 @@
 
 #####Set Scheduler Configuration Directives#####
 #Set the name of the job. This will be the first part of the error/output filename.
-#$ -N compress_data
+#$ -N ${name}
 
 #Set the current working directory as the location for the error and output files.
 #(Will show up as .e and .o files)
@@ -45,4 +45,9 @@
 
 module load python/2.7.15
 
-python compress_data.py --directory ${HOME}'/.yadlt/models/' --dataset ../Model/rna_solidtumor_tcgahnsc.csv --output CompressedData/ 
+# default parameters for non argon users
+#dataset='rna_data.npy'
+#directory=/Volumes/Files\ Backups/Document_12-12-18/New\ Folder\ With\ Items/yadlt/models/
+#output='Inputs/'
+
+python2.7 compress_data.py --dataset "${dataset}" --directory "${directory}" --output "${output}"

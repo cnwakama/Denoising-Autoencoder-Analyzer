@@ -28,8 +28,12 @@ def create_labels(label_path, training_path, name):
     print("Complete")
 
 def compressed_inputs(directory_path, dataset_path, output_directory):
-    data = np.genfromtxt(dataset_path, skip_header=1, delimiter=',')
-    data = data[:, 1:]
+    # used to load a csv file
+    # data = np.genfromtxt(dataset_path, skip_header=1, delimiter=',')
+    # data = data[:, 1:]
+
+    # load a .npy file
+    data = np.load(dataset_path)
 
     normalized_data = tf.keras.utils.normalize(data)
 
@@ -37,7 +41,7 @@ def compressed_inputs(directory_path, dataset_path, output_directory):
 
     for file in os.listdir(directory_path):
         if file.endswith(".meta"):
-            encoded_data = evalidate.encoder_tensor(normalized_data, os.path.join(directory_path, file))
+            encoded_data = evalidate.encoder_tensor(normalized_data, os.path.join(directory_path, file.split('.')[0]))
             np.savetxt(os.path.join(output_directory, os.path.splitext(file)[0]+".csv"), encoded_data, delimiter=",")
             print ("Model: " + os.path.splitext(file)[0])
 

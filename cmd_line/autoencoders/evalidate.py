@@ -35,9 +35,11 @@ class Evalidate():
         return 1 - SS_res / (SS_tot + K.epsilon())
 
     def encoder_tensor(self, data, model_path):
+        tf.reset_default_graph()
+        print (model_path)
         with tf.Session() as sess:
             with tf.get_default_graph().as_default() as graph:
-                saver = tf.train.import_meta_graph(model_path)
+                saver = tf.train.import_meta_graph(model_path + '.meta')
                 saver.restore(sess, model_path)
 
             name_scope = 'encoder'
@@ -187,7 +189,8 @@ class Evalidate():
         return training, labels
 
 
-#eval = Evalidate()
-#model = eval.build_model()
-#print (model.summary())
-#eval.train_model(model_path=model_path)
+# test prodecure
+# eval = Evalidate()
+# model = eval.build_model()
+# print (model.summary())
+# eval.train_model(model_path=model_path)

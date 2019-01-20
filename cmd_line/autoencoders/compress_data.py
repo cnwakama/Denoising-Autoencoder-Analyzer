@@ -9,4 +9,8 @@ flags.DEFINE_string('dataset', '', 'Path to dataset.')
 flags.DEFINE_string('directory', '', 'Path to directory holding model information')
 flags.DEFINE_string('output', '', 'output directory path')
 
+print (FLAGS.dataset)
+print (FLAGS.directory)
+print (FLAGS.output)
+
 u.compressed_inputs(FLAGS.directory, FLAGS.dataset, FLAGS.output)
