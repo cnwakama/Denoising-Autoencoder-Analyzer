@@ -46,8 +46,8 @@
 module load python/2.7.15
 
 # default parameters for non argon users
-#dataset='rna_data.npy'
-#directory=/Volumes/Files\ Backups/Document_12-12-18/New\ Folder\ With\ Items/yadlt/models/
-#output='Inputs/'
+dataset='rna_data_v2.npy'
+directory=/Volumes/Files\ Backups/Document_12-12-18/New\ Folder\ With\ Items/yadlt/models/
+output='InputsV2/'
 
 python2.7 compress_data.py --dataset "${dataset}" --directory "${directory}" --output "${output}"

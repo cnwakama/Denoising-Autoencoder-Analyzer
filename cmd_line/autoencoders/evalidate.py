@@ -1,5 +1,7 @@
 import tensorflow as tf
 import numpy as np
+import statsmodels.api as sm
+import utilities as util
 
 
 from sklearn.metrics import make_scorer
@@ -9,24 +11,27 @@ from sklearn.feature_selection import f_classif, f_regression, f_oneway
 from keras.models import Sequential, Model
 from keras.layers import Dense, Lambda, Input, BatchNormalization
 from keras.wrappers.scikit_learn import KerasRegressor
-# from vis.visualization import visualize_activation
+from scipy import stats
+from vis.visualization import visualize_activation
 
 # global variable
 model_path = "/Volumes/Files Backups/Document_12-12-18/New Folder With Items/yadlt/models/dae_model47"
 
 class Evalidate():
 
-    def __init__(self):
+    def __init__(self, X, Y):
         # training parameters
+        self.seed = 1
         self.batch_size = 5
         self.nb_epoch = 5
-        self.input_dim = 20531
         self.l1 = 0.01
         self.iter = 500
         self.verbose = 1
         self.cv = 3
-        self.X = None
-        self.Y = None
+
+        self.input_dim = np.shape(X)[1]
+        self.X = X
+        self.Y = Y
 
     def _coeff_determination(self, y_true, y_pred):
         K = tf.keras.backend
@@ -76,16 +81,38 @@ class Evalidate():
 
         return model
 
-    # using
     def basic_analysis(self):
+        # getting pval using two different methods
         f1, p1 = f_regression(self.X, self.Y)
         f2, p2, = f_classif(self.X, self.Y)
 
-    # use stat module
-    #def regression_stat(self):
+        return p1, p2, f1, f2
+
+    # use stat module to print a summary of logistic and linear regression
+    def regression_stat(self):
+        print ("Linear Regression")
+        x2 = sm.add_constant(self.X)
+        est = sm.OLS(self.Y, x2)
+        est2 = est.fit()
+        print(est2.summary())
+        print(est2.summary2())
+
+        print ("Logistics Regression")
+        logit_model = sm.Logit(self.Y, self.X)
+        result = logit_model.fit()
+        print(result.summary())
+        print(result.summary2())
 
     # calculate pval with matrix algebra
-    #def get_pval(self):
+    def get_pval(self, Y_hat, p, n):
+        vector_Y = np.ones((1, np.shape(Y_hat)[1]))
+        mean_Y = np.mean(self.Y)
+        vector_Y.fill(mean_Y[0])
+        msr = np.sum(np.square(Y_hat - vector_Y))/p
+        mse = np.sum(np.square(self.Y - Y_hat))/(n - p - 1)
+
+        f_val = msr/mse
+        # p_val =
 
 
 
@@ -94,15 +121,10 @@ class Evalidate():
         seed = 1
         np.random.seed(seed)
 
-        # load dataset
-        dataset = np.load("dataset.npy")
-
-        # split into input (X) and output (Y) variables
-        X = dataset[:, 0:input_dim]
-        Y = dataset[:, input_dim]
-
         if normalized:
-            X = tf.keras.utils.normalize(X)
+            X = tf.keras.utils.normalize(self.X)
+        else:
+            X = self.X
 
         # create model
         model = KerasRegressor(build_fn=self.build_model, epochs=self.nb_epoch, batch_size=self.batch_size, verbose=self.verbose)
@@ -113,82 +135,42 @@ class Evalidate():
         print (X_compressed)
         print (np.shape(X_compressed))
 
-        results = model.fit(X_compressed, Y)
+        results = model.fit(X_compressed, self.Y)
 
 
-        # # evaluate using n-fold cross validation
-        # scoring = ['roc_auc', 'accuracy', 'r2']
-        # kfold = KFold(n_splits=self.cv, random_state=seed)
-        # results = cross_val_score(model, X_compressed, Y, cv=kfold, verbose=1)
-        # print(results.mean())
-        # print(results.std())
-        #
-        # # from previous of evalidate
-        # # history = self.model.fit(trX, train_Y, verbose=1, validation_split=val)
-        #
-        # # {'r2', 'roc_auc', 'balanced_accuracy', 'roc_curve', 'neg_mean_squared_error', 'neg_mean_absolute_error'}
-        # # kFold = KFold(n_splits=10, random_state=1)
-        # # results = cross_val_score(regression, trX, train_Y)
-        #
-        # # print (np.shape(results))
-        # # print (np.shape(history))
-        # # proba = cross_val_predict(regression, train_X, train_Y, cv=kFold, method='predict_proba')
-        # # results.mean()
-        # # results.std()
-        #
-        # r2_sc, perm_sc, pval = permutation_test_score(regression, trX, train_Y, n_permutations=100, scoring='r2',
-        #                                               cv=None)
-        # proba = self.model.predict_proba(train_X)
-        # print (proba)
-        # print (r2_sc)
-        #
-        # # Metric Analysis
-        # predictions = self.model.predict(train_X)
-        # rounded = [round(x[0]) for x in predictions]
-        #
-        # score = self.model.evaluate(train_X, train_Y, verbose=0)
-        #
-        # print('Training score:', score[0])
-        # print('Training accuracy:', score[1])
-        # print('Mean Absolute Error:', score[2])
-        # print('Mean Squared Error:', score[3])
-        # print('Prediction:', predictions)
-        # print('Estimated Prediction:', rounded)
-        #
-        # if test_X != None:
-        #     score = self.model.evaluate(test_X, test_Y, verbose=0)
-        #
-        #     print('Test score:', score[0])
-        #     print('Test accuracy:', score[1])
-        #     print('Test accuracy:', score[2])
-        #     print('Test accuracy:', score[3])
-        #
-        # return trX
+        # evaluate using n-fold cross validation
+        scoring = ['roc_auc', 'balanced_accuracy', 'r2', 'neg_mean_squared_error']
+        kfold = KFold(n_splits=self.cv, random_state=seed)
+        results = cross_validate(model, X_compressed, self.Y, cv=kfold, verbose=1)
 
-    def min_death(self, data_path, model_path):
-        train_X, train_Y = self._create_variables(data_path)
-        self.build_model(train_X.shape[0], model_path)
-        normalX = self.train_model(train_X, train_Y)
-        # feature_extract = visualize_activation(self.model, layer_idx=1, filter_indices=None, grad_modifier="negate",
-        #                                        input_range=(np.min(normalX), np.max(normalX)), seed_input=1,
-        #                                        max_iter=self.iter, verbose=False)
-        #
-        # print("Shape of Extract:", feature_extract.shape)
-        # print(feature_extract)
+        print ("Results")
+        print ("ROC: ", results['test_roc_auc'])
+        print ("Accuracy: ", results['test_balanced_accuracy'])
+        print ("R2: ", results['test_r2'])
+        print ("Mean Squared Error: ", results['test_neg_mean_squared_error'])
 
 
 
-    def _create_variables(self, data_path):
-        dataset = np.load(data_path)
-        length = np.shape(dataset)[1] - 1
-        #split = dataset.shape[1] - 1
-        training = dataset[:, 0:length]
-        labels = dataset[:, length]
-        #training, labels = np.hsplit(dataset, [split])
+    def min_death(self, data_path, model_path, model, normalized=True):
+        #train_X, train_Y = self._create_variables(data_path)
+        #self.build_model(self.X.shape[0], model_path)
+        # normalX = self.train_model(self.X, self.Y)
+        if normalized:
+            normalX = tf.keras.utils.normalize(self.X)
+        else:
+            normalX = self.X
+        feature_extract = visualize_activation(model, layer_idx=1, filter_indices=None, grad_modifier="negate",
+                                               input_range=(np.min(normalX), np.max(normalX)), seed_input=self.seed,
+                                               max_iter=self.iter, verbose=self.verbose)
 
-        return training, labels
+        print("Shape of Extract:", feature_extract.shape)
+        print(feature_extract)
 
 
+
+
+
+# X, Y = util.load_dataset(input_dim=self.input_dim)
 # test prodecure
 # eval = Evalidate()
 # model = eval.build_model()

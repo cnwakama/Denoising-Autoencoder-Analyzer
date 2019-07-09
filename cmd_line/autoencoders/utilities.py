@@ -2,6 +2,8 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 import evalidate as e
+import seaborn as sns
+import matplotlib.pyplot as plt
 import os
 
 from os import listdir
@@ -42,7 +44,66 @@ def compressed_inputs(directory_path, dataset_path, output_directory):
     for file in os.listdir(directory_path):
         if file.endswith(".meta"):
             encoded_data = evalidate.encoder_tensor(normalized_data, os.path.join(directory_path, file.split('.')[0]))
+            print (np.shape(encoded_data))
             np.savetxt(os.path.join(output_directory, os.path.splitext(file)[0]+".csv"), encoded_data, delimiter=",")
             print ("Model: " + os.path.splitext(file)[0])
 
     print ("Complete")
+
+def load_dataset(dataset="dataset.npy", input_dim=20531):
+    # load dataset holding features and label (at the last column)
+    dataset = np.load(dataset)
+
+    # split into input (X) and output (Y) variables
+    X = dataset[:, 0:input_dim]
+    Y = dataset[:, input_dim]
+
+    return X,Y
+
+def create_variables(self, data_path):
+    dataset = np.load(data_path)
+    length = np.shape(dataset)[1] - 1
+    #split = dataset.shape[1] - 1
+    training = dataset[:, 0:length]
+    labels = dataset[:, length]
+    #training, labels = np.hsplit(dataset, [split])
+
+    return training, labels
+
+def generate_distribution(dataset, col=["feature" + str(a) for a in range(20531)], var_names=[], melt=True, show=False):
+    if len(var_names) == 0:
+        search = col
+    else:
+        search = var_names
+    data = np.genfromtxt(dataset, delimiter=',')
+    data_norm = tf.keras.utils.normalize(data, axis=1)
+
+    df = pd.DataFrame(data=data_norm, columns=col)
+    df_filter = df[search]
+
+    _, name = os.path.split(dataset)
+    name = os.path.splitext(name)[0]
+    variables = ''.join(['_' + x for x in search])
+    name = name + variables + ".png"
+
+    if melt:
+        # melt method
+        dfm = pd.melt(df_filter, var_name='columns')
+        g = sns.FacetGrid(dfm, col='columns')
+        g.map(sns.distplot, 'value')
+        g.savefig(os.path.splitext(name)[0])
+    else:
+        # loop method
+        fig, axes = plt.subplots(ncols=len(var_names))
+        for ax, col in zip(axes, df_filter.columns):
+            sns.distplot(df_filter[col], ax=ax)
+            # plt.savefig(name + '_' + str(col) + '.png')
+        plt.savefig(name)
+
+    if show:
+        plt.show()
+
+#genes = np.genfromtxt('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/gene_list.csv', delimiter=',', dtype=None)
+#generate_distribution('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/CompressedData/dae_model2.csv')
+#generate_distribution('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/dataset_without_id.csv', col=genes, var_names=genes[100:105], melt=False,show=True)
+# var_names=["feature" + str(a) for a in range(500, 600)]
