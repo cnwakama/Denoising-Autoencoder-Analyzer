@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-model_path = ''
+model_path = 'dae_model97'
 
 tf.reset_default_graph()
 
@@ -8,6 +8,14 @@ with tf.Session() as sess:
         with tf.get_default_graph().as_default() as graph:
                 saver = tf.train.import_meta_graph(model_path + '.meta')
                 saver.restore(sess, model_path)
+
+                ops = graph.get_operations()
+
+                input = graph.get_tensor_by_name('enc-w:0')
+
+                print (ops)
+
+
 
         # name_scope = 'encoder'
         # encoded_tensor = self.get_model_activation_func(name_scope, sess.graph)
