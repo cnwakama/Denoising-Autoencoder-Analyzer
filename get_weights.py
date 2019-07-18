@@ -10,9 +10,10 @@ with tf.Session() as sess:
                 saver.restore(sess, model_path)
 
                 ops = graph.get_operations()
-                input = graph.get_tensor_by_name('enc-w:0')
+                weights = graph.get_tensor_by_name('enc-w:0')
 
                 print (ops)
+                print (weights)
 
 
 
