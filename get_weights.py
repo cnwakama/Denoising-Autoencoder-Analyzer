@@ -9,11 +9,12 @@ with tf.Session() as sess:
                 saver = tf.train.import_meta_graph(model_path + '.meta')
                 saver.restore(sess, model_path)
 
-                ops = graph.get_operations()
+                # ops = graph.get_operations()
                 weights = graph.get_tensor_by_name('enc-w:0')
 
-                print (ops)
-                print (weights)
+                # print (ops)
+                weight_matrix = weights.eval()
+		print (weight_matrix)
 
 
 
