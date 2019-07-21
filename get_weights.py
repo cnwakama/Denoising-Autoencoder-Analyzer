@@ -9,12 +9,13 @@ FLAGS = flags.FLAGS
 # parameter
 flags.DEFINE_string('model', '', 'The path to *.meta file for model')
 flags.DEFINE_string('directory', '', 'Directory of .meta files')
+flags.DEFINE_string('output', '.', 'The path to the output ')
 
 '''
 Gets the weights from the .meta file and saves weights in to csv file
 '''
-def get_weights(model):
-        # resetting enviroment graph
+def get_weights(model, output_path):
+        # resetting environment graph
         tf.reset_default_graph()
 
         with tf.Session() as sess:
@@ -26,18 +27,18 @@ def get_weights(model):
                         # get tensor of weights 
                         weights = graph.get_tensor_by_name('enc-w:0')
 
-                        # evalulate tensor return a numpy array of trained weights in the model
+                        # evaluate tensor return a numpy array of trained weights in the model
                         weight_matrix = weights.eval()
 
                         # saves weights into a csv file
-                        np.savetxt(os.path.basename(model).split('.')[0] + ".csv", weight_matrix, delimiter=",")
+                        np.savetxt(os.path.join(output_path, os.path.basename(model).split('.')[0] + ".csv"), weight_matrix, delimiter=",")
 
 
 
 if __name__ == '__main__':
         if FLAGS.model != '':
-                get_weights(FLAGS.model)
+                get_weights(FLAGS.model, FLAGS.output)
         else:
-                for file in glob.glob(FLAGS.directory + "/*.meta"):
-                        get_weights(file)
+                for file_path in glob.glob(FLAGS.directory + "/*.meta"):
+                        get_weights(file_path, FLAGS.output)
 
