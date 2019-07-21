@@ -7,7 +7,7 @@ flags = tf.app.flags
 FLAGS = flags.FLAGS
 
 # parameter
-# flags.DEFINE_string('model', '', 'The path to *.meta file for model')
+flags.DEFINE_string('model', '', 'The path to *.meta file for model')
 flags.DEFINE_string('directory', '', 'Directory of .meta files')
 
 '''
@@ -35,6 +35,9 @@ def get_weights(model):
 
 
 if __name__ == '__main__':
-        for file in glob.glob(FLAGS.directory + "/*.meta"):
-		get_weights(file)
+        if FLAGS.model != '':
+                get_weights(FLAGS.model)
+        else:
+                for file in glob.glob(FLAGS.directory + "/*.meta"):
+                        get_weights(file)
 
