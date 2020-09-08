@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#####Set Scheduler Configuration Directives#####
+##### Set Scheduler Configuration Directives #####
 #Set the name of the job. This will be the first part of the error/output filename.
 #$ -N ${name}
 
@@ -45,9 +45,9 @@
 
 module load python/2.7.15
 
-# default parameters for non argon users
-dataset='rna_data_v2.npy'
-directory=/Volumes/Files\ Backups/Document_12-12-18/New\ Folder\ With\ Items/yadlt/models/
-output='InputsV2/'
+# default parameters for non argon users (need to add own inputs)
+dataset='.npy'
+directory=../yadlt/models/
+output='OutputCSV/'
 
-python2.7 compress_data.py --dataset "${dataset}" --directory "${directory}" --output "${output}"
+python2.7 compress_data.py --dataset "${dataset}" --directory "${directory}" --output "${output}" # Encoding Test Dataset .npy on all .meta models to generate a encoded set to important features to a directory
