@@ -41,7 +41,7 @@
 
 #Specify the high speed network fabric required to run the job
 ##$ -l fabric=omnipath
-#####End Resource Selection Directives#####
+##### End Resource Selection Directives #####
 
 module load python/2.7.15
 
