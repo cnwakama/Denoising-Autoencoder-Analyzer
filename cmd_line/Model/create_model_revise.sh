@@ -51,7 +51,6 @@ test_reconstruction='Models/test_reconstruction_revise.csv'
 data=${HOME}'/.yadlt/data/dae/'
 
 if [[ -d 'Models/' ]]; then
-        #mkdir -p 'Models/'
         touch ${feature_path}
         touch ${weight_path}
         touch ${bias_h_path}
