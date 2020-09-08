@@ -77,7 +77,6 @@ learning_rate=(0.005 0.01 0.05)
 corruption_rate=(0.0 0.1 0.2)
 epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
-#act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
 python csv_to_numpy.py --dataset rna_solidtumor_tcgahnsc.csv  --directory ${dataset}
@@ -104,7 +103,6 @@ for b in "${batch_size[@]}" ; do
         for c in "${corruption_rate[@]}" ; do
             for e in "${epochs[@]}"; do
                 for enc in "${act_fun_enc[@]}" ; do
-                    #for dec in "${act_fun_dec[@]}" ; do
                         echo 'Model '"${model}"
                         mkdir -p "$data$name"
 
@@ -144,7 +142,6 @@ for b in "${batch_size[@]}" ; do
                         first='first'
                         ((model++))
                         name='dae_model'${model}
-                    #done
                 done
             done
         done
