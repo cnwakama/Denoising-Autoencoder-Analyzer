@@ -6,6 +6,7 @@
 ### Running Job on Argon to Generate Models
 
 `cd cmd_line/Model/
+
 qsub create_model.sh`
 
 #### Other Scripts (Not very much important)
@@ -17,11 +18,13 @@ qsub create_model.sh`
 > Similar to *create_model.sh* but add hyperparameter to decoder functions
 
 `cd cmd_line/Model/
+
 qsub create_model_revise.sh` 
 
 > Transfers input data into a smaller dimensional dataset based on the encocder. 
 
 `cd cmd_line/autoencoders/
+
 qsub run_compress_data.sh`
 
 
