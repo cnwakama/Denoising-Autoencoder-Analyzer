@@ -75,7 +75,7 @@ learning_rate=(0.005 0.01 0.05)
 corruption_rate=(0.0 0.1 0.2)
 epochs=(100 200 500)
 act_fun_enc=(sigmoid tanh relu)
-act_fun_dec=(none sigmoid tanh relu)
+#act_fun_dec=(none sigmoid tanh relu)
 
 echo 'Creating *.npy dataset file'
 python csv_to_numpy.py --dataset "rna_solidtumor_tcgahnsc.csv" --name "$name" --directory ${dataset}
@@ -94,6 +94,7 @@ for i in `seq 1 20531`; do printf ",Feature %d" ${i}; done >> ${bias_h_path}
 printf '%s' 'Model' >> ${test_reconstruction}
 for i in `seq 1 20531`; do printf ",Feature %d" ${i}; done >> ${test_reconstruction}
 
+dec=None
 first='next_line'
 model_count=${2}
 echo 'Start Training Models'
@@ -102,7 +103,7 @@ for b in "${batch_size[@]}" ; do
         for c in "${corruption_rate[@]}" ; do
             for e in "${epochs[@]}"; do
                 for enc in "${act_fun_enc[@]}" ; do
-                    for dec in "${act_fun_dec[@]}" ; do
+                    #for dec in "${act_fun_dec[@]}" ; do
                         if [[ $model_count != $model ]] ; then
                             ((model++))
                             continue
@@ -149,7 +150,7 @@ for b in "${batch_size[@]}" ; do
                         ((model_count++))
                         ((model++))
                         name='dae_model'${model}
-                    done
+                    #done
                 done
             done
         done
