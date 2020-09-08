@@ -102,8 +102,3 @@ def generate_distribution(dataset, col=["feature" + str(a) for a in range(20531)
 
     if show:
         plt.show()
-
-#genes = np.genfromtxt('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/gene_list.csv', delimiter=',', dtype=None)
-#generate_distribution('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/CompressedData/dae_model2.csv')
-#generate_distribution('/Users/chibuzonwakama/Documents/Denoising-Autoencoder-Analyzer/cmd_line/autoencoders/dataset_without_id.csv', col=genes, var_names=genes[100:105], melt=False,show=True)
-# var_names=["feature" + str(a) for a in range(500, 600)]
